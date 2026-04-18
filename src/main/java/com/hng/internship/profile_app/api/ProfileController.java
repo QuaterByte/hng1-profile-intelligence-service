@@ -44,6 +44,8 @@ public class ProfileController {
     public ResponseEntity<?> createProfile(@RequestBody com.hng.internship.profile_app.model.RequestBody requestBody){
         if(requestBody == null || requestBody.name().trim().isEmpty())
             return ResponseEntity.badRequest().body(new ErrorResponse("error", "Missing or empty name"));
+        if(isNumeric(requestBody.name()))
+            throw  new IllegalArgumentException("Invalid type");
 
         Optional<Data> data = dataRepository.findByName(requestBody.name());
         if(data.isPresent())
@@ -179,6 +181,16 @@ public class ProfileController {
         StringBuilder builder = new StringBuilder(Instant.now().toString());
         builder = builder.delete(21, 28);
         return  builder.toString();
+    }
+
+    private static boolean isNumeric(String str) {
+        if (str == null || str.isEmpty()) return false;
+        try {
+            Double.parseDouble(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 
 }
